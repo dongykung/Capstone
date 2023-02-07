@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.capstone.databinding.ActivityCreateBinding
 import com.example.capstone.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.fragment_create.*
 
 class CreateActivity: AppCompatActivity() {
     private lateinit var binding:ActivityCreateBinding
@@ -36,6 +37,9 @@ class CreateActivity: AppCompatActivity() {
                 supportFragmentManager.beginTransaction().replace(R.id.createfragment,selectViewFragment).commit()
             }
             2->{
+                var bundle=Bundle()
+                bundle.putString("hobby",hobby)
+                createViewFragment.arguments=bundle
                 supportFragmentManager.beginTransaction().replace(R.id.createfragment,createViewFragment).commit()
             }
         }
