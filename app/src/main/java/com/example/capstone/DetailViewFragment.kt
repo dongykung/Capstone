@@ -3,28 +3,46 @@ package com.example.capstone
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.icu.lang.UCharacter.IndicPositionalCategory.LEFT
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.GridLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.capstone.data.SignUpData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.activity_login.view.*
+import kotlinx.android.synthetic.main.activity_signup.view.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 
 
 class DetailViewFragment: Fragment() {
+
+    lateinit var db : FirebaseFirestore
+    lateinit var myhobby:ArrayList<String>
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_main,container,false)
         view.detailviewfragment_recyclerview.adapter=DetailViewRecyclerViewAdapter()
         view.detailviewfragment_recyclerview.layoutManager=LinearLayoutManager(activity)
 
-
+        db= Firebase.firestore
+        val uid= Firebase.auth.currentUser?.uid
+        var test:String=""
         val fab:FloatingActionButton=view.CreateClub
         val recyclerView:RecyclerView=view.detailviewfragment_recyclerview
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -54,16 +72,206 @@ class DetailViewFragment: Fragment() {
 
         val scrapMainLayout: GridLayout =view.imagegrid
         scrapMainLayout.columnCount=5
-
-        val text:TextView=TextView(view.context)
-        text.setText("gkdl")
-        text.textSize=10f
-        val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-        param.marginStart=200
-        text.layoutParams=param
+        val consMainLayout:ConstraintLayout=view.mainlayout
 
 
-        scrapMainLayout.addView(text)
+
+
+        db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener {  document->
+            val item=document.toObject(SignUpData::class.java)
+            view.UserName.text=item?.nickname+"님을"
+
+            for((index,data)in item?.interest_array!!.withIndex()){
+                if(data=="게임"){
+                    val imgbtn= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.car1)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+
+                   // imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=200
+                    param.height=200
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+
+
+
+                }
+                if(data=="사진"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_photo)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="운동"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_sports)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="여행"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_trip)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="음악"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_music)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="사교/직업"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_job)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="독서"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_read)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="요리"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_cook)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="댄스"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_dance)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="차/오토바이"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_car)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="반려동물"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_pet)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="공예"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_art)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="봉사활동"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_volunteer)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+                if(data=="공부/자기개발"){
+                    val imgbtn:ImageButton= ImageButton(view.context)
+                    imgbtn.setImageResource(R.drawable.icon_study)
+                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
+                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
+                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
+                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
+                    param.width=170
+                    param.height=170
+                    param.marginStart=20
+                    imgbtn.layoutParams=param
+                    scrapMainLayout.addView(imgbtn)
+                }
+            }
+        }
+
 
 
         return view
@@ -88,3 +296,5 @@ class DetailViewFragment: Fragment() {
 
     }
 }
+
+

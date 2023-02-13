@@ -1,5 +1,6 @@
 package com.example.capstone
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -15,20 +16,28 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_create.view.*
+import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.HashMap
 
 class CreateViewFragment: Fragment() {
     lateinit var storage: FirebaseStorage
-    lateinit var db: FirebaseFirestore
+    lateinit var db : FirebaseFirestore
     var photoUri: Uri?=null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view= LayoutInflater.from(activity).inflate(R.layout.fragment_create,container,false)
+        storage = Firebase.storage
+        db= Firebase.firestore
+
         var mActivity = activity as CreateActivity
         view.changehobby.setOnClickListener{
             mActivity.changeFragment(1,"")
@@ -118,7 +127,11 @@ class CreateViewFragment: Fragment() {
         return view
     }
         fun uploadContent(hobby:String){
-            val clubinfo:MutableList<String>=HashMap()
-            db.collection("카테고리").document(hobby).
+            db.collection("category").document(hobby).update("RoomId",FieldValue.arrayUnion("dfa"))
+
+
+
+
+
         }
 }

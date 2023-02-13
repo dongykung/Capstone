@@ -5,14 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_create.view.*
 import kotlinx.android.synthetic.main.fragment_selecthobby.view.*
 
 class SelectFragment:Fragment() {
+    lateinit var db : FirebaseFirestore
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_selecthobby,container,false)
         val mActivity2 = activity as CreateActivity
-
+        db= Firebase.firestore
         view.sportsImageButton.setOnClickListener{
             mActivity2.changeFragment(2,"운동")
         }

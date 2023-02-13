@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
         android:layout_width="250dp"
         android:layout_height="120dp"
         android:layout_marginTop="15dp"
@@ -40,7 +41,7 @@
         android:layout_width="300dp"
         android:layout_height="40dp"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="500dp"
         app:cardBackgroundColor="#A9A9A9"
         app:cardCornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +79,7 @@
         android:id="@+id/changehobby"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="350dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clubprofile"
         app:srcCompat="@drawable/hobby" />
@@ -146,4 +147,33 @@
             android:textSize="20dp" />
     </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="380dp"
+        android:layout_height="280dp"
+        android:layout_marginStart="5dp"
+        app:cardBackgroundColor="#A9A9A9"
+        app:cardCornerRadius="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView2">
+
+        <EditText
+            android:id="@+id/explainclub2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:background="@android:color/transparent"
+            android:ems="5"
+            android:gravity="top"
+            android:hint="모임가입 조건과 상세한 설명을 해주세요"
+            android:inputType="textMultiLine"
+            android:privateImeOptions="defaultInputmode=korean"
+            android:scrollHorizontally="false"
+            android:textColorHint="	#D3D3D3	"
+            tools:ignore="TouchTargetSizeCheck"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="10dp" />
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
