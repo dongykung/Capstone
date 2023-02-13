@@ -19,7 +19,9 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.capstone.data.ClubData
 import com.example.capstone.data.SignUpData
+import com.example.capstone.data.getclubuid
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -80,11 +82,11 @@ class DetailViewFragment: Fragment() {
         db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener {  document->
             val item=document.toObject(SignUpData::class.java)
             view.UserName.text=item?.nickname+"님을"
-
-            for((index,data)in item?.interest_array!!.withIndex()){
+            myhobby= item?.interest_array!!
+            for((index,data)in item.interest_array!!.withIndex()){
                 if(data=="게임"){
                     val imgbtn= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.car1)
+                    imgbtn.setImageResource(R.drawable.icon_game)
                     imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
 
                    // imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
@@ -277,9 +279,27 @@ class DetailViewFragment: Fragment() {
         return view
     }
     inner class DetailViewRecyclerViewAdapter:RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        var clubdata:ArrayList<ClubData> = arrayListOf()
+
+        init{
+            clubdata.clear()
+            for((index,data)in myhobby.withIndex()){
+                db.collection("category").document(data).get().addOnSuccessListener {  document->
+                    val item2=document.toObject(getclubuid::class.java)
+                    for((index,data2) in item2?.myhobbylist!!.withIndex()){
+                        db.collection("meeting_room").document(data2).get().addOnSuccessListener {  document1->
+                            val item3=document1.toObject(ClubData::class.java)
+                            if (item3 != null) {
+                                clubdata.add(item3)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            var view=LayoutInflater.from(parent.context).inflate(R.layout.item_main,parent,false)
+            val view=LayoutInflater.from(parent.context).inflate(R.layout.item_main,parent,false)
             return CustomViewHolder(view)
         }
         inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -289,6 +309,7 @@ class DetailViewFragment: Fragment() {
             var viewholder=(holder as CustomViewHolder).itemView
 
         }
+
 
         override fun getItemCount(): Int {
             return 13

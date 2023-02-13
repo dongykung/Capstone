@@ -8,8 +8,8 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
         android:layout_width="250dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="15dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         app:cardBackgroundColor="#A9A9A9"
         app:cardCornerRadius="15dp"
@@ -17,15 +17,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/explainclub"
+            android:id="@+id/maxnumber"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:background="@android:color/transparent"
             android:ems="5"
             android:gravity="top"
-            android:hint="모임 목표를 설명해주세요"
-            android:inputType="textMultiLine"
+            android:hint="모임 인원수를 설정해주세요"
+            android:inputType="number"
             android:privateImeOptions="defaultInputmode=korean"
             android:scrollHorizontally="false"
             android:textColorHint="	#D3D3D3	"

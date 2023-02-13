@@ -1,6 +1,6 @@
 package com.example.capstone
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -16,6 +16,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.capstone.data.ClubData
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -23,10 +25,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_create.view.*
-import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.HashMap
 
 class CreateViewFragment: Fragment() {
     lateinit var storage: FirebaseStorage
@@ -122,16 +122,35 @@ class CreateViewFragment: Fragment() {
             filterActivityLauncher.launch(intent)
         }
         view.CreateBtn.setOnClickListener{
-            uploadContent(arguments?.getString("hobby").toString())
+            uploadContent(arguments?.getString("hobby").toString(),view)
+            println(arguments?.getString("hobby").toString())
         }
         return view
     }
-        fun uploadContent(hobby:String){
-            db.collection("category").document(hobby).update("RoomId",FieldValue.arrayUnion("dfa"))
+        @SuppressLint("SimpleDateFormat")
+        fun uploadContent(hobby: String, view: View){
+                val s1:String= Firebase.auth.currentUser?.uid.toString()
+                val s2:String=SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                val makeuid=s1.plus(s2)
+                db.collection("category").document(hobby).update("RoomId",FieldValue.arrayUnion(makeuid))
 
+                val clubprofileimagename=makeuid
+                 var storageRef=storage.reference.child("meeting_info").child(clubprofileimagename)
 
+            storageRef.putFile(photoUri!!).addOnSuccessListener {
+                storageRef.downloadUrl.addOnSuccessListener { uri->
+                    val clubdata = ClubData()
+                    clubdata.category=hobby
+                    clubdata.imageUrl=uri.toString()
+                    clubdata.title = view.club.text.toString()
+                    clubdata.info_text = view.explainclub2.text.toString()
+                    clubdata.max = Integer.parseInt(view.maxnumber.text.toString())
+                    clubdata.timestamp = System.currentTimeMillis()
+                    clubdata.writer_uid = Firebase.auth.currentUser?.uid.toString()
 
+                    db.collection("meeting_room").document(makeuid).set(clubdata)
 
-
+                }
+            }
         }
 }
