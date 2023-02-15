@@ -1,12 +1,14 @@
 package com.example.capstone
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.icu.lang.UCharacter.IndicPositionalCategory.LEFT
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,30 +21,41 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.capstone.data.ClubData
 import com.example.capstone.data.SignUpData
 import com.example.capstone.data.getclubuid
+import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_login.view.*
 import kotlinx.android.synthetic.main.activity_signup.view.*
+import kotlinx.android.synthetic.main.fragment_create.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
+import kotlinx.android.synthetic.main.item_main.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 
 class DetailViewFragment: Fragment() {
-
     lateinit var db : FirebaseFirestore
-    lateinit var myhobby:ArrayList<String>
+    var myhobby:ArrayList<String>?=null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_main,container,false)
-        view.detailviewfragment_recyclerview.adapter=DetailViewRecyclerViewAdapter()
-        view.detailviewfragment_recyclerview.layoutManager=LinearLayoutManager(activity)
-
         db= Firebase.firestore
+
+
+
+
         val uid= Firebase.auth.currentUser?.uid
         var test:String=""
         val fab:FloatingActionButton=view.CreateClub
@@ -79,224 +92,46 @@ class DetailViewFragment: Fragment() {
 
 
 
-        db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener {  document->
-            val item=document.toObject(SignUpData::class.java)
-            view.UserName.text=item?.nickname+"님을"
-            myhobby= item?.interest_array!!
-            for((index,data)in item.interest_array!!.withIndex()){
-                if(data=="게임"){
-                    val imgbtn= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_game)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
 
-                   // imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=200
-                    param.height=200
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
+            //val item= it.toObject(SignUpData::class.java)
+          //  view.UserName.text=item?.nickname+"님을"
+            //myhobby= item?.interest_array!!
 
 
 
-                }
-                if(data=="사진"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_photo)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="운동"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_sports)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="여행"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_trip)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="음악"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_music)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="사교/직업"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_job)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="독서"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_read)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="요리"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_cook)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="댄스"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_dance)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="차/오토바이"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_car)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="반려동물"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_pet)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="공예"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_art)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="봉사활동"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_volunteer)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-                if(data=="공부/자기개발"){
-                    val imgbtn:ImageButton= ImageButton(view.context)
-                    imgbtn.setImageResource(R.drawable.icon_study)
-                    imgbtn.scaleType=(ImageView.ScaleType.FIT_XY)
-                    imgbtn.setBackgroundColor(Color.parseColor("#eeeeee"))
-                    imgbtn.setBackgroundResource(R.drawable.shape_for_circle_button)
-                    val param:GridLayout.LayoutParams=GridLayout.LayoutParams()
-                    param.width=170
-                    param.height=170
-                    param.marginStart=20
-                    imgbtn.layoutParams=param
-                    scrapMainLayout.addView(imgbtn)
-                }
-            }
-        }
-
-
+        view.detailviewfragment_recyclerview.adapter=DetailViewRecyclerViewAdapter()
+        view.detailviewfragment_recyclerview.layoutManager=LinearLayoutManager(activity)
 
         return view
     }
+
+
+
+    @SuppressLint("NotifyDataSetChanged")
     inner class DetailViewRecyclerViewAdapter:RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var clubdata:ArrayList<ClubData> = arrayListOf()
 
         init{
             clubdata.clear()
-            for((index,data)in myhobby.withIndex()){
-                db.collection("category").document(data).get().addOnSuccessListener {  document->
-                    val item2=document.toObject(getclubuid::class.java)
-                    for((index,data2) in item2?.myhobbylist!!.withIndex()){
-                        db.collection("meeting_room").document(data2).get().addOnSuccessListener {  document1->
-                            val item3=document1.toObject(ClubData::class.java)
-                            if (item3 != null) {
-                                clubdata.add(item3)
+            db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener{   document->
+                val item=document.toObject(SignUpData::class.java)
+                for(data in item?.interest_array!!){
+                    db.collection("category").document(data.toString()).get().addOnSuccessListener{    document2->
+                        val item2=document2.toObject(getclubuid::class.java)
+                        for(data2 in item2?.RoomId!!){
+                            db.collection("meeting_room").document(data2).get().addOnSuccessListener{   document3->
+                                val item3=document3.toObject(ClubData::class.java)
+                                clubdata.add(item3!!)
+                                notifyDataSetChanged()
+                                println(item3)
                             }
                         }
                     }
                 }
             }
-        }
+
+            }
+
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val view=LayoutInflater.from(parent.context).inflate(R.layout.item_main,parent,false)
@@ -305,14 +140,21 @@ class DetailViewFragment: Fragment() {
         inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         }
+        @SuppressLint("CheckResult")
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var viewholder=(holder as CustomViewHolder).itemView
-
+                Glide.with(holder.itemView.context).load(clubdata[position].imageUrl).into(viewholder.detailviewitem_imageview_content)
+                viewholder.ClubName.text=clubdata[position].title
+                viewholder.NumberCount.text= clubdata[position].max.toString()
+                viewholder.ClubExplain.text=clubdata[position].info_text
+                viewholder.CardView.setOnClickListener{
+                    println("클릭ㅋㅋ")
+                }
         }
 
 
         override fun getItemCount(): Int {
-            return 13
+            return clubdata.size
         }
 
     }
