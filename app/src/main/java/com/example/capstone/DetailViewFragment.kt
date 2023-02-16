@@ -25,6 +25,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.fragment_main.*
 
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import kotlinx.android.synthetic.main.item_main.view.*
@@ -34,6 +35,8 @@ import kotlinx.android.synthetic.main.item_main.view.*
 class DetailViewFragment: Fragment() {
     lateinit var db : FirebaseFirestore
     var scrapMainLayout:GridLayout?=null
+    var clubdata:ArrayList<ClubData> = arrayListOf()
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_main,container,false)
         db= Firebase.firestore
@@ -72,20 +75,16 @@ class DetailViewFragment: Fragment() {
 
         scrapMainLayout=view.imagegrid
         scrapMainLayout?.columnCount=5
-        val consMainLayout:ConstraintLayout=view.mainlayout
-
-
-
-
-
-            //val item= it.toObject(SignUpData::class.java)
-          //  view.UserName.text=item?.nickname+"님을"
-            //myhobby= item?.interest_array!!
 
 
 
         view.detailviewfragment_recyclerview.adapter=DetailViewRecyclerViewAdapter()
         view.detailviewfragment_recyclerview.layoutManager=LinearLayoutManager(activity)
+        view.refresh_layout.setOnRefreshListener {
+            clubdata.shuffle()
+            view.detailviewfragment_recyclerview.adapter?.notifyDataSetChanged()
+            refresh_layout.isRefreshing = false
+        }
 
         return view
     }
@@ -94,7 +93,7 @@ class DetailViewFragment: Fragment() {
 
     @SuppressLint("NotifyDataSetChanged", "ResourceAsColor")
     inner class DetailViewRecyclerViewAdapter:RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        var clubdata:ArrayList<ClubData> = arrayListOf()
+        //var clubdata:ArrayList<ClubData> = arrayListOf()
 
         init{
             clubdata.clear()
@@ -102,28 +101,28 @@ class DetailViewFragment: Fragment() {
                 val item=document.toObject(SignUpData::class.java)
                 view?.UserName?.text=item?.nickname+"님을"
                 for(data in item?.interest_array!!){
-                        if(data=="운동"){
-                            val param=GridLayout.LayoutParams()
-                            val test2=Button(context)
-                            //test2.setBackgroundColor(R.color.not)
-                            test2.setBackgroundResource(R.drawable.shape_for_circle_button)
-                             test2.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_sports,0,0)
-                            test2.text="운동"
-                            param.width =175
-                            param.height =237
-                            param.marginStart=40
-                            test2.layoutParams=param
-                            scrapMainLayout?.addView(test2)
-                        }
+                    if(data=="운동"){
+                        val param=GridLayout.LayoutParams()
+                        val test2=Button(context)
+                        //test2.setBackgroundColor(R.color.not)
+                        test2.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test2.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_sports,0,0)
+                        test2.text="운동"
+                        param.width =165
+                        param.height =230
+                        param.marginStart=30
+                        test2.layoutParams=param
+                        scrapMainLayout?.addView(test2)
+                    }
                     if(data=="음악"){
                         val test=Button(context)
                         val param=GridLayout.LayoutParams()
                         test.setBackgroundResource(R.drawable.shape_for_circle_button)
                         test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_music,0,0)
                         test.text="음악"
-                        param.width=175
-                        param.height=245
-                        param.marginStart=40
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
                         test.layoutParams=param
                         scrapMainLayout?.addView(test)
                     }
@@ -133,22 +132,155 @@ class DetailViewFragment: Fragment() {
                         test.setBackgroundResource(R.drawable.shape_for_circle_button)
                         test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_trip,0,0)
                         test.text="여행"
-                        param.width=175
-                        param.height=245
-                        param.marginStart=40
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="사교"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_job,0,0)
+                        test.text="사교"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="독서"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_read,0,0)
+                        test.text="독서"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="요리"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_cook,0,0)
+                        test.text="요리"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="사진"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_photo,0,0)
+                        test.text="사진"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="게임"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_game,0,0)
+                        test.text="게임"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="댄스"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_dance,0,0)
+                        test.text="댄스"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="자동차"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_car,0,0)
+                        test.text="자동차"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="애완동물"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_pet,0,0)
+                        test.text="애완동물"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="공예"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_art,0,0)
+                        test.text="공예"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="봉사활동"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_volunteer,0,0)
+                        test.text="봉사활동"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="스터디그룹"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_study,0,0)
+                        test.text="스터디"
+                        param.width=165
+                        param.height=230
+                        param.marginStart=30
                         test.layoutParams=param
                         scrapMainLayout?.addView(test)
                     }
                     db.collection("category").document(data).get().addOnSuccessListener{    document2->
                         val item2=document2.toObject(getclubuid::class.java)
                         for(data2 in item2?.RoomId!!){
-                            db.collection("meeting_room").document(data2).get().addOnSuccessListener{   document3->
-                                val item3=document3.toObject(ClubData::class.java)
-                                clubdata.add(item3!!)
-                                clubdata.sortByDescending { it.timestamp }
-                                notifyDataSetChanged()
-                                println(item3)
-                            }
+                                db.collection("meeting_room").document(data2).get()
+                                    .addOnSuccessListener { document3 ->
+                                        val item3 = document3.toObject(ClubData::class.java)
+                                        clubdata.add(item3!!)
+                                        clubdata.sortByDescending { it.timestamp }
+                                        notifyDataSetChanged()
+                                        println(item3)
+                                    }
                         }
                     }
                 }

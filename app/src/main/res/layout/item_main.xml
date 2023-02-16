@@ -64,6 +64,8 @@
                     android:layout_marginStart="30dp"
                     android:layout_marginBottom="14dp"
                     android:text="본문 내용"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/NumberCount"
                     app:layout_constraintHorizontal_bias="0.0"
