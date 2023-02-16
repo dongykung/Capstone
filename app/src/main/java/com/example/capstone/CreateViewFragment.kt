@@ -27,6 +27,7 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_create.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CreateViewFragment: Fragment() {
     lateinit var storage: FirebaseStorage
@@ -132,10 +133,14 @@ class CreateViewFragment: Fragment() {
                 val s1:String= Firebase.auth.currentUser?.uid.toString()
                 val s2:String=SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                 val makeuid=s1.plus(s2)
-                db.collection("category").document(hobby).update("RoomId",FieldValue.arrayUnion(makeuid))
+                db.collection("category").document(hobby).update("RoomId",FieldValue.arrayUnion(makeuid)).addOnFailureListener{
+                    val data= hashMapOf("RoomId" to ArrayList<String>())
+                    db.collection("category").document(hobby).set(data)
+                    db.collection("category").document(hobby).update("RoomId",FieldValue.arrayUnion(makeuid))
+                }
 
                 val clubprofileimagename=makeuid
-                 var storageRef=storage.reference.child("meeting_info").child(clubprofileimagename)
+                 val storageRef=storage.reference.child("meeting_info").child(clubprofileimagename)
 
             storageRef.putFile(photoUri!!).addOnSuccessListener {
                 storageRef.downloadUrl.addOnSuccessListener { uri->

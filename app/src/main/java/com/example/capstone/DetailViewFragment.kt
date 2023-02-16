@@ -99,15 +99,15 @@ class DetailViewFragment: Fragment() {
         init{
             clubdata.clear()
             db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener{   document->
-
                 val item=document.toObject(SignUpData::class.java)
+                view?.UserName?.text=item?.nickname+"님을"
                 for(data in item?.interest_array!!){
                         if(data=="운동"){
                             val param=GridLayout.LayoutParams()
                             val test2=Button(context)
                             //test2.setBackgroundColor(R.color.not)
                             test2.setBackgroundResource(R.drawable.shape_for_circle_button)
-                             test2.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.sport,0,0)
+                             test2.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_sports,0,0)
                             test2.text="운동"
                             param.width =175
                             param.height =237
@@ -118,10 +118,21 @@ class DetailViewFragment: Fragment() {
                     if(data=="음악"){
                         val test=Button(context)
                         val param=GridLayout.LayoutParams()
-                       // test.setBackgroundColor(R.color.not)
                         test.setBackgroundResource(R.drawable.shape_for_circle_button)
-                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.sport,0,0)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_music,0,0)
                         test.text="음악"
+                        param.width=175
+                        param.height=245
+                        param.marginStart=40
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    if(data=="여행"){
+                        val test=Button(context)
+                        val param=GridLayout.LayoutParams()
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.xml_trip,0,0)
+                        test.text="여행"
                         param.width=175
                         param.height=245
                         param.marginStart=40
@@ -134,6 +145,7 @@ class DetailViewFragment: Fragment() {
                             db.collection("meeting_room").document(data2).get().addOnSuccessListener{   document3->
                                 val item3=document3.toObject(ClubData::class.java)
                                 clubdata.add(item3!!)
+                                clubdata.sortByDescending { it.timestamp }
                                 notifyDataSetChanged()
                                 println(item3)
                             }
@@ -154,7 +166,7 @@ class DetailViewFragment: Fragment() {
         }
         @SuppressLint("CheckResult", "SuspiciousIndentation")
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            var viewholder=(holder as CustomViewHolder).itemView
+            val viewholder=(holder as CustomViewHolder).itemView
                 Glide.with(holder.itemView.context).load(clubdata[position].imageUrl).apply(RequestOptions().circleCrop()).into(viewholder.detailviewitem_imageview_content)
                 viewholder.ClubName.text=clubdata[position].title
                 viewholder.NumberCount.text= clubdata[position].max.toString()
