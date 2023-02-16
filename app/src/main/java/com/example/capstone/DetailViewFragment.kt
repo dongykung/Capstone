@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.icu.lang.UCharacter.IndicPositionalCategory.LEFT
+import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.capstone.data.ClubData
 import com.example.capstone.data.SignUpData
 import com.example.capstone.data.getclubuid
@@ -49,6 +51,8 @@ import kotlinx.coroutines.tasks.await
 class DetailViewFragment: Fragment() {
     lateinit var db : FirebaseFirestore
     var myhobby:ArrayList<String>?=null
+    var scrapMainLayout:GridLayout?=null
+    //var param:GridLayout.LayoutParams?=null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_main,container,false)
         db= Firebase.firestore
@@ -85,8 +89,9 @@ class DetailViewFragment: Fragment() {
         }
     }
 
-        val scrapMainLayout: GridLayout =view.imagegrid
-        scrapMainLayout.columnCount=5
+        scrapMainLayout=view.imagegrid
+        scrapMainLayout?.columnCount=5
+       // param=GridLayout.LayoutParams()
         val consMainLayout:ConstraintLayout=view.mainlayout
 
 
@@ -116,7 +121,33 @@ class DetailViewFragment: Fragment() {
             db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener{   document->
                 val item=document.toObject(SignUpData::class.java)
                 for(data in item?.interest_array!!){
-                    db.collection("category").document(data.toString()).get().addOnSuccessListener{    document2->
+                        if(data=="운동"){
+                            var test=ImageButton(context)
+                            test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                            test.setImageResource(R.drawable.icon_sports)
+                            test.scaleType=ImageView.ScaleType.FIT_XY
+                            val param=GridLayout.LayoutParams()
+                            param.width =200
+                            param.height =200
+                            param.marginStart=20
+                            param.topMargin=20
+                            test.layoutParams=param
+                            scrapMainLayout?.addView(test)
+                        }
+                    if(data=="음악"){
+                        var test=ImageButton(context)
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setImageResource(R.drawable.icon_music)
+                        test.scaleType=ImageView.ScaleType.FIT_XY
+                        val param=GridLayout.LayoutParams()
+                        param.width=200
+                        param.height=200
+                        param.marginStart=20
+                        param.topMargin=20
+                        test.layoutParams=param
+                        scrapMainLayout?.addView(test)
+                    }
+                    db.collection("category").document(data).get().addOnSuccessListener{    document2->
                         val item2=document2.toObject(getclubuid::class.java)
                         for(data2 in item2?.RoomId!!){
                             db.collection("meeting_room").document(data2).get().addOnSuccessListener{   document3->
@@ -140,10 +171,10 @@ class DetailViewFragment: Fragment() {
         inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         }
-        @SuppressLint("CheckResult")
+        @SuppressLint("CheckResult", "SuspiciousIndentation")
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var viewholder=(holder as CustomViewHolder).itemView
-                Glide.with(holder.itemView.context).load(clubdata[position].imageUrl).into(viewholder.detailviewitem_imageview_content)
+                Glide.with(holder.itemView.context).load(clubdata[position].imageUrl).apply(RequestOptions().circleCrop()).into(viewholder.detailviewitem_imageview_content)
                 viewholder.ClubName.text=clubdata[position].title
                 viewholder.NumberCount.text= clubdata[position].max.toString()
                 viewholder.ClubExplain.text=clubdata[position].info_text
