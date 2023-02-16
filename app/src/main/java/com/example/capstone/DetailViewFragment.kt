@@ -4,21 +4,14 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.icu.lang.UCharacter.IndicPositionalCategory.LEFT
-import android.media.Image
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.widget.AppCompatButton
+
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
-import androidx.core.view.marginStart
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,32 +20,20 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.capstone.data.ClubData
 import com.example.capstone.data.SignUpData
 import com.example.capstone.data.getclubuid
-import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_login.view.*
-import kotlinx.android.synthetic.main.activity_signup.view.*
-import kotlinx.android.synthetic.main.fragment_create.*
+
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import kotlinx.android.synthetic.main.item_main.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
+
 
 
 class DetailViewFragment: Fragment() {
     lateinit var db : FirebaseFirestore
-    var myhobby:ArrayList<String>?=null
     var scrapMainLayout:GridLayout?=null
-    //var param:GridLayout.LayoutParams?=null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_main,container,false)
         db= Firebase.firestore
@@ -91,7 +72,6 @@ class DetailViewFragment: Fragment() {
 
         scrapMainLayout=view.imagegrid
         scrapMainLayout?.columnCount=5
-       // param=GridLayout.LayoutParams()
         val consMainLayout:ConstraintLayout=view.mainlayout
 
 
@@ -112,38 +92,39 @@ class DetailViewFragment: Fragment() {
 
 
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged", "ResourceAsColor")
     inner class DetailViewRecyclerViewAdapter:RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var clubdata:ArrayList<ClubData> = arrayListOf()
 
         init{
             clubdata.clear()
             db.collection("user").document(Firebase.auth.currentUser?.uid.toString()).get().addOnSuccessListener{   document->
+
                 val item=document.toObject(SignUpData::class.java)
                 for(data in item?.interest_array!!){
                         if(data=="운동"){
-                            var test=ImageButton(context)
-                            test.setBackgroundResource(R.drawable.shape_for_circle_button)
-                            test.setImageResource(R.drawable.icon_sports)
-                            test.scaleType=ImageView.ScaleType.FIT_XY
                             val param=GridLayout.LayoutParams()
-                            param.width =200
-                            param.height =200
-                            param.marginStart=20
-                            param.topMargin=20
-                            test.layoutParams=param
-                            scrapMainLayout?.addView(test)
+                            val test2=Button(context)
+                            //test2.setBackgroundColor(R.color.not)
+                            test2.setBackgroundResource(R.drawable.shape_for_circle_button)
+                             test2.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.sport,0,0)
+                            test2.text="운동"
+                            param.width =175
+                            param.height =237
+                            param.marginStart=40
+                            test2.layoutParams=param
+                            scrapMainLayout?.addView(test2)
                         }
                     if(data=="음악"){
-                        var test=ImageButton(context)
-                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
-                        test.setImageResource(R.drawable.icon_music)
-                        test.scaleType=ImageView.ScaleType.FIT_XY
+                        val test=Button(context)
                         val param=GridLayout.LayoutParams()
-                        param.width=200
-                        param.height=200
-                        param.marginStart=20
-                        param.topMargin=20
+                       // test.setBackgroundColor(R.color.not)
+                        test.setBackgroundResource(R.drawable.shape_for_circle_button)
+                        test.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.sport,0,0)
+                        test.text="음악"
+                        param.width=175
+                        param.height=245
+                        param.marginStart=40
                         test.layoutParams=param
                         scrapMainLayout?.addView(test)
                     }
