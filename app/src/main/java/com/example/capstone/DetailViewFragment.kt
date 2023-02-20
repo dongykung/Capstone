@@ -310,10 +310,10 @@ class DetailViewFragment: Fragment() {
                 viewholder.NumberCount.text= clubdata[position].max.toString()
                 viewholder.ClubExplain.text=clubdata[position].info_text
                 viewholder.CardView.setOnClickListener{
-                    var intent= Intent(this, MeetingRoomActivity::class.java)
-                    intent.putExtra("meeting_room_id",clubroomuid[position])
-                    startActivity(intent)
-                    println(clubroomuid[position])
+                   // var intent= Intent(this, MeetingRoomActivity::class.java)
+                    //intent.putExtra("meeting_room_id",clubroomuid[position])
+                    //startActivity(intent)
+                    //println(clubroomuid[position])
                 }
         }
 
