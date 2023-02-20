@@ -36,6 +36,7 @@ class DetailViewFragment: Fragment() {
     lateinit var db : FirebaseFirestore
     var scrapMainLayout:GridLayout?=null
     var clubdata:ArrayList<ClubData> = arrayListOf()
+    var clubroomuid:ArrayList<String> =arrayListOf()
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view= LayoutInflater.from(activity).inflate(R.layout.fragment_main,container,false)
@@ -85,6 +86,7 @@ class DetailViewFragment: Fragment() {
             view.detailviewfragment_recyclerview.adapter?.notifyDataSetChanged()
             refresh_layout.isRefreshing = false
         }
+
 
         return view
     }
@@ -270,19 +272,22 @@ class DetailViewFragment: Fragment() {
                         test.layoutParams=param
                         scrapMainLayout?.addView(test)
                     }
-                    db.collection("category").document(data).get().addOnSuccessListener{    document2->
-                        val item2=document2.toObject(getclubuid::class.java)
-                        for(data2 in item2?.RoomId!!){
+                    db.collection("category").document(data).get().addOnSuccessListener { document2 ->
+                        val item2 = document2.toObject(getclubuid::class.java)
+                        if (item2?.RoomId != null){
+                            for (data2 in item2?.RoomId!!) {
                                 db.collection("meeting_room").document(data2).get()
                                     .addOnSuccessListener { document3 ->
                                         val item3 = document3.toObject(ClubData::class.java)
                                         clubdata.add(item3!!)
+                                        clubroomuid.add(data2)
                                         clubdata.sortByDescending { it.timestamp }
                                         notifyDataSetChanged()
                                         println(item3)
                                     }
-                        }
+                            }
                     }
+                    }.addOnFailureListener{}
                 }
             }
 
@@ -292,6 +297,7 @@ class DetailViewFragment: Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val view=LayoutInflater.from(parent.context).inflate(R.layout.item_main,parent,false)
             return CustomViewHolder(view)
+
         }
         inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -304,7 +310,10 @@ class DetailViewFragment: Fragment() {
                 viewholder.NumberCount.text= clubdata[position].max.toString()
                 viewholder.ClubExplain.text=clubdata[position].info_text
                 viewholder.CardView.setOnClickListener{
-                    println("클릭ㅋㅋ")
+                    var intent= Intent(this, MeetingRoomActivity::class.java)
+                    intent.putExtra("meeting_room_id",clubroomuid[position])
+                    startActivity(intent)
+                    println(clubroomuid[position])
                 }
         }
 
